@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@700&display=swap');
+
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.bar {
+  width: 6px;
+  border-radius: 4px;
+  background: linear-gradient(to top, #FF7A00, #FF4D4D);
+}
+
+/* différentes hauteurs pour imiter les barres du logo */
+.bar:nth-child(1) { height: 16px; }
+.bar:nth-child(2) { height: 20px; }
+.bar:nth-child(3) { height: 24px; }
+.bar:nth-child(4) { height: 20px; }
+.bar:nth-child(5) { height: 16px; }
+
+.logo-text {
+  font-family: 'League', sans-serif;
+  font-weight: 700;
+  font-size: 28px;
+  color: #0B23F4;
+  letter-spacing: -0.5px;
+}

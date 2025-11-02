@@ -1,0 +1,33 @@
+import { NextResponse } from "next/server";
+
+export async function POST(request: Request) {
+  try {
+
+    const body = await request.json();
+    const { username, password } = body;
+
+    console.log("🟢 Données reçues dans /api/login :", body);
+
+    if (username === "user@test.com" && password === "12345") {
+      const response = NextResponse.json({ success: true });
+
+
+      response.cookies.set("auth_token", "mocked-server-token", {
+        path: "/",
+        httpOnly: false, // (true en prod)
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24, // 1 jour
+      });
+
+      return response;
+    }
+
+    return NextResponse.json(
+      { success: false, message: "Identifiants incorrects" },
+      { status: 401 }
+    );
+  } catch (err) {
+    console.error("Erreur dans /api/login :", err);
+    return NextResponse.json({ success: false, message: "Erreur serveur" }, { status: 500 });
+  }
+}
