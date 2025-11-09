@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 
 export async function POST(request: Request) {
   try {
-    // ✅ 1️⃣ Récupère le message ET l'ID utilisateur envoyés depuis le frontend
+    // Récupère le message ET l'ID utilisateur envoyés depuis le frontend
     const { message, userId } = await request.json();
 
     // --- Décodage du token si userId manquant ---
@@ -24,9 +24,7 @@ export async function POST(request: Request) {
     }
 
     if (!finalUserId) {
-      console.warn(
-        "⚠️ Aucun userId reçu ni trouvé dans le cookie. Mode test activé."
-      );
+      console.warn("⚠️ Aucun userId reçu ni trouvé dans le cookie. Mode test activé.");
     }
 
     // --- Validation basique ---
@@ -37,16 +35,14 @@ export async function POST(request: Request) {
       );
     }
 
-    // --- 2️⃣ Récupération des données utilisateur depuis ton API ---
+    // ---  Récupération des données utilisateur depuis ton API ---
     let userData = null;
     let perfData = null;
 
     try {
-      // ✅ Appelle ton endpoint Next.js local déjà enrichi
+      // Appelle ton endpoint Next.js local déjà enrichi
       const userRes = await fetch(
-        `${
-          process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"
-        }/api/user`,
+        `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/user`,
         {
           headers: {
             Cookie: request.headers.get("cookie") || "",
@@ -58,29 +54,18 @@ export async function POST(request: Request) {
         userData = await userRes.json();
         perfData = userData?.performance || null;
       } else {
-        console.warn(
-          "⚠️ Impossible de récupérer les données utilisateur :",
-          await userRes.text()
-        );
+        console.warn("⚠️ Impossible de récupérer les données utilisateur :", await userRes.text());
       }
     } catch (err) {
-      console.warn(
-        "⚠️ Erreur lors de la récupération des données utilisateur :",
-        err
-      );
+      console.warn("⚠️ Erreur lors de la récupération des données utilisateur :", err);
     }
-   
-    //console.log("📦 Données récupérées depuis /api/user :")
-    //console.log("User:", userData);
-    //console.log("Performance:", perfData);
 
     // --- Extraction des données utiles ---
     const userName = userData?.profile?.firstName || "utilisateur";
     const totalDistance = userData?.statistics?.totalDistance || "N/A";
     const totalSessions = userData?.statistics?.totalSessions || "N/A";
     const totalDuration = userData?.statistics?.totalDuration || "N/A";
-    const userPhoto =
-      userData?.profile?.profilePicture || "/images/default-avatar.jpg";
+    const userPhoto = userData?.profile?.profilePicture || "/images/default-avatar.jpg";
 
     // ---  Prompt système enrichi  ---
     const systemPrompt = `
@@ -122,7 +107,7 @@ Données réelles de l'utilisateur :
 `;
 
     // ---  Détection du type de question pour adapter la longueur de réponse ---
-    let maxTokens = 400; // valeur par défaut
+    let maxTokens = 400;
     const lowerMsg = message.toLowerCase();
 
     if (
@@ -134,7 +119,7 @@ Données réelles de l'utilisateur :
       lowerMsg.includes("séance") ||
       lowerMsg.includes("exercice")
     ) {
-      maxTokens = 800; // réponse longue pour programmes & conseils
+      maxTokens = 800;
     } else if (
       lowerMsg.includes("graphique") ||
       lowerMsg.includes("statistique")
@@ -151,92 +136,106 @@ Données réelles de l'utilisateur :
 
     console.log(`🧩 max_tokens défini sur : ${maxTokens}`);
 
-    // --- Appel à l’API Mistral ---
-    const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.MISTRAL_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "mistral-medium-latest",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: message },
-        ],
-        temperature: 0.5,
-        max_tokens: maxTokens,
-      }),
-    });
+    // --- Ajout Timeout Controller ---
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000); // 10 secondes max
 
-    const data = await res.json();
+    try {
+      // --- Appel à l’API Mistral ---
+      const res = await fetch("https://api.mistral.ai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.MISTRAL_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "mistral-medium-latest",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: message },
+          ],
+          temperature: 0.5,
+          max_tokens: maxTokens,
+        }),
+        signal: controller.signal, // permet d’annuler la requête si timeout
+      });
 
-    if (!res.ok) {
-      console.error("Erreur Mistral:", data);
+      clearTimeout(timeout); // libère le timer
 
-      //  Si la capacité du modèle est dépassée, on retente avec un modèle plus léger
-      if (
-        data?.code === "3505" ||
-        data?.message?.includes("capacity exceeded")
-      ) {
-        console.warn(
-          "⚠️ Capacité du modèle dépassée — nouvel essai avec mistral-small-latest..."
+      // --- Gestion du rate limit ---
+      if (res.status === 429) {
+        return NextResponse.json(
+          { error: "Trop de requêtes envoyées. Réessaie dans quelques secondes ⏳" },
+          { status: 429 }
         );
+      }
 
-        try {
-          const retryRes = await fetch(
-            "https://api.mistral.ai/v1/chat/completions",
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${process.env.MISTRAL_API_KEY}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                model: "mistral-small-latest", 
-                messages: [
-                  { role: "system", content: systemPrompt },
-                  { role: "user", content: message },
-                ],
-                temperature: 0.5,
-                max_tokens: maxTokens,
-              }),
-            }
-          );
+      const data = await res.json();
+
+      if (!res.ok) {
+        console.error("Erreur Mistral:", data);
+
+        if (data?.code === "3505" || data?.message?.includes("capacity exceeded")) {
+          console.warn("⚠️ Capacité du modèle dépassée — nouvel essai avec mistral-small-latest...");
+
+          const retryRes = await fetch("https://api.mistral.ai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.MISTRAL_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              model: "mistral-small-latest",
+              messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: message },
+              ],
+              temperature: 0.5,
+              max_tokens: maxTokens,
+            }),
+          });
 
           const retryData = await retryRes.json();
 
           if (retryRes.ok) {
-            console.log(
-              "✅ Réponse obtenue via le fallback mistral-small-latest"
-            );
+            console.log("✅ Réponse obtenue via le fallback mistral-small-latest");
             return NextResponse.json({
-              reply:
-                retryData.choices?.[0]?.message?.content || "Aucune réponse.",
+              reply: retryData.choices?.[0]?.message?.content || "Aucune réponse.",
             });
           } else {
             console.error("❌ Échec du fallback :", retryData);
           }
-        } catch (retryError) {
-          console.error("❌ Erreur lors du fallback Mistral :", retryError);
         }
+
+        return NextResponse.json(
+          { error: "Erreur de communication avec Mistral" },
+          { status: 500 }
+        );
       }
 
+      // ✅ Réponse réussie
+      return NextResponse.json({
+        reply: data.choices?.[0]?.message?.content || "Aucune réponse.",
+      });
+    } catch (error: any) {
+      clearTimeout(timeout); // 🆕 évite les timers bloqués
+
+      if (error.name === "AbortError") {
+        console.error("⏱️ Timeout: la requête à Mistral a expiré");
+        return NextResponse.json(
+          { error: "Le délai de réponse de Mistral a expiré (timeout)" },
+          { status: 504 }
+        );
+      }
+
+      console.error("❌ Erreur inattendue:", error);
       return NextResponse.json(
-        { error: "Erreur de communication avec Mistral" },
+        { error: "Erreur serveur interne" },
         { status: 500 }
       );
     }
-
-    //  Réponse réussie du premier appel
-    return NextResponse.json({
-      reply: data.choices?.[0]?.message?.content || "Aucune réponse.",
-    });
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { error: "Erreur serveur interne" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Erreur serveur interne" }, { status: 500 });
   }
 }
