@@ -55,7 +55,7 @@ export default function Header() {
 
           <button
             onClick={handleLogout}
-            className="text-blue-700 pl-7 border-l-[1px] border-blue-700"
+            className="text-blue-700 pl-7 border-l[1px] border-blue-700"
           >
             Se déconnecter
           </button>

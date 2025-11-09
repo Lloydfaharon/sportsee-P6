@@ -1,86 +1,76 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
-export default function WeeklySummary({
-  runningData = [],
-  weeklyGoal = 6,
+export default function WeeklyChart({
+  weeklyStats,
 }: {
-  runningData?: any[];
-  weeklyGoal?: number;
+  weeklyStats: {
+    start: string;
+    end: string;
+    distance: number;
+    duration: number;
+    count: number;
+    remaining: number;
+  };
 }) {
-  // 🔹 Déterminer la semaine ACTUELLE
-  const today = new Date();
-  const firstDayOfWeek = new Date(today);
-  firstDayOfWeek.setDate(today.getDate() - today.getDay() + 1); // Lundi
-  firstDayOfWeek.setHours(0, 0, 0, 0);
+  if (!weeklyStats) return <p>Aucune donnée hebdomadaire</p>;
 
-  const lastDayOfWeek = new Date(firstDayOfWeek);
-  lastDayOfWeek.setDate(firstDayOfWeek.getDate() + 6);
-  lastDayOfWeek.setHours(23, 59, 59, 999);
+  const achieved = weeklyStats.count;
+  const remaining = weeklyStats.remaining;
+  const weeklyGoal = achieved + remaining;
 
-  // 🔹 Filtrer les courses de cette semaine
-  const sessionsThisWeek = useMemo(() => {
-    //  Parse les dates au format local, pas UTC
-    const parseLocalDate = (d: string) => {
-      const [year, month, day] = d.split("-").map(Number);
-      return new Date(year, month - 1, day); // ⚡ évite le décalage horaire
-    };
-
-    return runningData.filter((run) => {
-      const runDate = parseLocalDate(run.date); // ⬅️ ici la version corrigée
-      return runDate >= firstDayOfWeek && runDate <= lastDayOfWeek;
-    });
-  }, [runningData, firstDayOfWeek, lastDayOfWeek]);
-
-  // Calculs
-  const sessionsCount = sessionsThisWeek.length;
-  const totalDuration = sessionsThisWeek.reduce(
-    (sum, s) => sum + s.duration,
-    0
-  );
-  const totalDistance = sessionsThisWeek.reduce(
-    (sum, s) => sum + s.distance,
-    0
-  );
-
-  // Donut chart
-  const achieved = sessionsCount;
-  const remaining = Math.max(weeklyGoal - achieved, 0);
   const data = [
     { name: "Réalisés", value: achieved },
     { name: "Restants", value: remaining },
   ];
+
   const COLORS = ["#0B23F4", "#D8DCFF"];
 
-  const formatDate = (date: Date) =>
-    date.toLocaleDateString("fr-FR", { day: "2-digit", month: "long" });
-
-  console.log("➡️ firstDayOfWeek:", firstDayOfWeek);
-  console.log("➡️ lastDayOfWeek:", lastDayOfWeek);
-  console.log("➡️ sessionsThisWeek:", sessionsThisWeek);
+  // ✅ Nouveau format de date : "jj/mm/aaaa"
+  const formatDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
 
   return (
-    <section className="bg-[#F2F3FF] rounded-xl pb-20 flex justify-between items-center mt-20 mx-11">
-      <div className="flex flex-col gap-2">
-        <h2 className="text-[16px] font-medium text-black">Cette semaine</h2>
+    <section className="bg-[#F2F3FF] relative rounded-xl pb-16 sm:pb-20 flex flex-col items-center mt-20 mx-4 sm:mx-8 md:mx-10 lg:mx-11">
+      {/* --- Titre + Dates --- */}
+      <div className="w-full lg:text-left mb-8">
+        <h2 className="text-[18px] sm:text-[20px] font-medium text-black">
+          Cette semaine
+        </h2>
         <p className="text-sm text-gray-500">
-          Du {formatDate(firstDayOfWeek)} au {formatDate(lastDayOfWeek)}
+          Du {formatDate(weeklyStats.start)} au {formatDate(weeklyStats.end)}
         </p>
+      </div>
 
-        <div className="bg-white w-[450px] rounded-xl p-6 mt-4 shadow-sm flex flex-col-reverse gap-8 ">
+      {/* --- Conteneur principal --- */}
+      <div className="flex flex-col lg:flex-row gap-8 w-full">
+        {/* --- Colonne gauche : Donut Chart --- */}
+        <div className="bg-white rounded-xl p-6 sm:p-8 shadow-sm flex flex-col-reverse gap-8 w-full lg:w-1/2">
           {/* --- Donut Chart --- */}
-          <div className="relative  h-[150px] flex  w-full">
+          <div className="relative h-[180px] sm:h-[200px] flex w-full justify-center">
+            {/* Légende gauche */}
+            <div className="flex items-center text-[10px] sm:text-[12px] absolute bottom-10 left-10 gap-2">
+              <span className="w-3 h-3 bg-[#0B23F4] rounded-full"></span>
+              <span className="text-[#707070]">{achieved} réalisées</span>
+            </div>
+
+            {/* Le graphique */}
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={data}
                   innerRadius={40}
-                  outerRadius={60}
+                  outerRadius={70}
                   startAngle={90}
                   endAngle={450}
-                  paddingAngle={2}
+                  cornerRadius={2}
                   dataKey="value"
                 >
                   {data.map((entry, index) => (
@@ -93,43 +83,49 @@ export default function WeeklySummary({
                 </Pie>
               </PieChart>
             </ResponsiveContainer>
-            {/* Légende au centre */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <p className="text-[#0B23F4] text-lg font-bold">x{achieved}</p>
-              <p className="text-xs text-gray-500">sur {weeklyGoal}</p>
+
+            {/* Légende droite */}
+            <div className="flex items-center text-[10px] sm:text-[12px] absolute top-10 right-10 gap-2">
+              <span className="w-3 h-3 bg-[#D8DCFF] rounded-full"></span>
+              <span className="text-[#707070]">{remaining} restants</span>
             </div>
           </div>
 
-          <div>
-            <p className="text-[#0B23F4] font-semibold text-lg">
+          {/* --- Texte sous le graphique --- */}
+          <div className="text-center lg:text-left">
+            <p className="text-[#0B23F4] font-semibold text-lg sm:text-xl">
               x{achieved}{" "}
-              <span className="text-gray-400 font-normal">
+              <span className="text-[#B6BDFC] font-normal">
                 sur objectif de {weeklyGoal}
               </span>
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-[#707070]">
               Courses hebdomadaires réalisées
             </p>
           </div>
         </div>
-      </div>
 
-      {/* --- Stats à droite --- */}
-      <div className="flex flex-col gap-4 w-[572px] ">
-        <div className="bg-white rounded-xl p-5  shadow-sm">
-          <h3 className="text-[15px] text-gray-500 mb-1">Durée d’activité</h3>
-          <p className="text-[18px] font-semibold text-[#0B23F4]">
-            {totalDuration}{" "}
-            <span className="text-gray-400 text-sm">minutes</span>
-          </p>
-        </div>
+        {/* --- Colonne droite : Statistiques --- */}
+        <div className="flex flex-col gap-4 w-full lg:w-1/2">
+          <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm text-center lg:text-left">
+            <h3 className="text-[15px] sm:text-[16px] text-gray-500 mb-1">
+              Durée d’activité
+            </h3>
+            <p className="text-[18px] sm:text-[20px] font-semibold text-[#0B23F4]">
+              {weeklyStats.duration}{" "}
+              <span className="text-sm text-[#B6BDFC]">minutes</span>
+            </p>
+          </div>
 
-        <div className="bg-white rounded-xl p-5  shadow-sm">
-          <h3 className="text-[15px] text-gray-500 mb-1">Distance</h3>
-          <p className="text-[18px] font-semibold text-[#FF4B4B]">
-            {totalDistance.toFixed(1)}{" "}
-            <span className="text-gray-400 text-sm">kilomètres</span>
-          </p>
+          <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm text-center lg:text-left">
+            <h3 className="text-[15px] sm:text-[16px] text-gray-500 mb-1">
+              Distance
+            </h3>
+            <p className="text-[18px] sm:text-[20px] font-semibold text-[#FF4B4B]">
+              {weeklyStats.distance.toFixed(1)}{" "}
+              <span className="text-sm text-[#FCC1B6]">kilomètres</span>
+            </p>
+          </div>
         </div>
       </div>
     </section>

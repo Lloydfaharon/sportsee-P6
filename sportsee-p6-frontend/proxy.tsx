@@ -26,7 +26,7 @@ export default async function proxy(req: Request) {
 
   const token = req.headers.get("cookie")?.match(/sportsee_token=([^;]+)/)?.[1];
 
-  const publicPaths = ["/"]; // 
+  const publicPaths = ["/"];
 
 
   if (!publicPaths.includes(pathname) && !token) {

@@ -1,19 +1,29 @@
 import React from "react";
 
 interface StatistiqueCardProps {
-  title: string;
-  value: string | number;
+  label: string;
+  mainValue: string | number;
+  subValue?: string | number;
   unit?: string;
 }
 
-export default function StatistiqueCard({ title, value, unit }: StatistiqueCardProps) {
+export default function StatistiqueCard({
+  label,
+  mainValue,
+  subValue,
+  unit,
+}: StatistiqueCardProps) {
   return (
-    <div className="w-[278px] h-[103px] bg-[#0B23F4] rounded-xl p-4 flex flex-col justify-center">
-      <p className="text-[12px] text-white mb-1">{title}</p>
-      <p className="text-white text-[22px] ">
-        {value}{" "}
-        {unit && <span className="text-[12px] text-gray-200">{unit}</span>}
-      </p>
+    <div className="bg-[#0B23F4] rounded-2xl px-6 py-5 flex flex-col justify-center 2xl:w-full xl:w-[250px] lg:w-[238px] md:w-[210px]  h-[103px] text-white">
+      <p className="text-[14px] mb-2 opacity-90">{label}</p>
+
+      <div className="flex items-baseline gap-1">
+        <p className="text-[22px] font-normal leading-none">{mainValue}</p>
+
+        {unit && (
+          <p className="text-[14px] text-[#B6BDFC] leading-none ml-1">{unit}</p>
+        )}
+      </div>
     </div>
   );
 }

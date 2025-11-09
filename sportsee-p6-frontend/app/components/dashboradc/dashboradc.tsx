@@ -1,9 +1,10 @@
 "use client";
-
+import '../../styles/styles.css';
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import PerformanceCharts from "../../components/performanceCharts/PerformanceCharts";
 import WeeklyChart from "../../components/WeeklyChart/WeeklyChart";
+import ChatbotModal from "@/app/components/chatbot/ChatBotModal";
 
 export default function Dashboardc() {
   const [userData, setUserData] = useState<any>(null);
@@ -11,6 +12,7 @@ export default function Dashboardc() {
   const [stats, setStats] = useState<any>(null);
   const [runningData, setRunningData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   //  Charger les données utilisateur depuis l’API mock
   useEffect(() => {
@@ -43,6 +45,10 @@ export default function Dashboardc() {
 
   if (loading) return <p>Chargement...</p>;
   if (!user || !stats) return <p>Aucune donnée disponible</p>;
+  //console.log("userData.performance :", userData?.performance);
+  console.log(user)
+  console.log("👤 Utilisateur connecté :", user);
+
 
   return (
     <div className="mt-24">
@@ -74,27 +80,29 @@ export default function Dashboardc() {
             objectifs.
           </h1>
         </div>
-        <button className="w-64 h-14 bg-[#0B23F4] text-white rounded-lg hover:bg-blue-600 transition">
+        <button
+          onClick={() => setIsChatOpen(true)}
+          className="w-64 h-14 bg-[#0B23F4] text-white rounded-lg hover:bg-blue-600 transition"
+        >
           Lancer une conversation
         </button>
       </div>
 
       {/* --- Profil utilisateur --- */}
       <div
-        className="mx-11 mt-10 bg-white rounded-xl flex justify-between items-center px-14 py-8 "
-        style={{
-          background:
-            "linear-gradient(0deg, rgba(255, 255, 255, 0.00) -8.38%, #FFF 100%)",
-        }}
+        className="custom-container mx-11 mt-10 bg-white rounded-xl flex justify-between items-center px-14 py-8 "
+       
       >
-        <div className="flex items-center gap-6">
-          <Image
-            src={user.profilePicture || "/images/default-avatar.jpg"}
-            alt={`${user.firstName} ${user.lastName}`}
-            width={104}
-            height={117}
-            className="object-cover rounded-xl bg-blue-500"
-          />
+        <div className="flex items-center gap-6 hover:s">
+          <div className="overflow-hidden rounded-xl w-[104px] h-[117px]">
+            <Image
+              src={user.profilePicture || "/images/default-avatar.jpg"}
+              alt={`${user.firstName} ${user.lastName}`}
+              width={104}
+              height={117}
+              className="object-cover w-full h-full rounded-xl bg-blue-500 transform transition-transform duration-500 hover:scale-110"
+            />
+          </div>
 
           <div>
             <h2 className="font-inter text-[22px] font-medium leading-normal">
@@ -114,7 +122,7 @@ export default function Dashboardc() {
               Distance totale parcourue
             </p>
           </div>
-          <div className="flex items-center text-white text-2xl bg-blue-700 gap-5 px-7 py-7 rounded-2xl">
+          <div className="flex items-center text-white text-2xl bg-[#0B23F4] gap-5 px-7 py-7 rounded-2xl">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="34"
@@ -163,21 +171,25 @@ export default function Dashboardc() {
                 fill="white"
               />
             </svg>
-            <p>{stats.totalDistance.toFixed(1)} km</p>
+            <p>{Math.round(stats.totalDistance)} km</p>
           </div>
         </div>
       </div>
 
       {/* --- Graphiques --- */}
       <div className="mt-28">
-        <PerformanceCharts runningData={runningData} />
-        {userData && (
-          <WeeklyChart
-            runningData={userData.runningData}
-            weeklyGoal={userData.weeklyGoal}
-          />
-        )}
+        <>
+          <PerformanceCharts data={userData.performance} />
+          <WeeklyChart weeklyStats={userData.weeklyStats} />
+        </>
       </div>
+      {isChatOpen && (
+        <ChatbotModal
+          onClose={() => setIsChatOpen(false)}
+          userId={user?.id}
+          userPhoto={user?.profilePicture}
+        />
+      )}
     </div>
   );
 }

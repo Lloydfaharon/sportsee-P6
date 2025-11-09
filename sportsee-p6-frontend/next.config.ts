@@ -1,16 +1,24 @@
-import type { NextConfig } from "next";
-export const proxy = "./proxy.ts";
-
-
-const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-// next.config.js
-module.exports = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
-    domains: ["localhost"], // ✅ autorise les images depuis localhost
+    // Autorise le chargement d’images hébergées sur ton backend local
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "8000",
+        pathname: "/**", // ✅ autorise tous les chemins d’images, pas seulement /images/**
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "8000",
+        pathname: "/**", // utile si tu utilises parfois 127.0.0.1 au lieu de localhost
+      },
+    ],
+    unoptimized: true, // désactive l’optimisation d’images de Next (utile en dev local)
   },
+  reactStrictMode: true, // bonne pratique pour le développement
 };
 
-export default nextConfig;
+module.exports = nextConfig;

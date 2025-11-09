@@ -1,8 +1,6 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { mockLogin } from "@/app/mocks/mock";
-import { setAuthToken } from "@/app/utils/auth";
 import { ROUTES } from "@/app/routes/routes";
 import Logo from "./components/logo/logo";
 
@@ -13,21 +11,39 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await mockLogin(username, password);
-      setAuthToken(res.token);
-      router.push(ROUTES.DASHBOARD);
-    } catch {
+  e.preventDefault();
+  setError("");
+  
+
+  try {
+    const res = await fetch("http://localhost:8000/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+
+    if (!res.ok) {
       setError("Identifiants incorrects.");
+      return;
     }
-  };
+
+    const data = await res.json();
+
+    //  Enregistre le vrai token du backend dans le cookie
+    document.cookie = `sportsee_token=${data.token}; path=/;`;
+
+    //  Redirige
+    window.location.href = "/dashboard";
+  } catch (err) {
+    setError("Erreur de serveur.");
+  }
+};
+
 
   return (
     <div className="flex h-screen w-full bg-[#F2F3FF]">
       {/* Bloc gauche */}
       <div className="mx-42 bg-[#F2F3FF] flex flex-col items-center justify-center relative">
-        {/* Logo */}
         <div className="absolute top-[50px] left-2.5">
           <Logo />
         </div>
@@ -41,10 +57,7 @@ export default function LoginPage() {
 
           <form onSubmit={handleLogin} className="flex flex-col gap-6">
             <div>
-              <label
-                htmlFor="email"
-                className="text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="email" className="text-sm font-medium text-gray-700">
                 Adresse email
               </label>
               <input
@@ -57,10 +70,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label
-                htmlFor="pwd"
-                className="text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="pwd" className="text-sm font-medium text-gray-700">
                 Mot de passe
               </label>
               <input
@@ -82,9 +92,7 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="text-[14px] text-black mt-6">
-            Mot de passe oublié ?
-          </p>
+          <p className="text-[14px] text-black mt-6">Mot de passe oublié ?</p>
         </div>
       </div>
 

@@ -2,7 +2,7 @@
 // MOCK API - SportSee (TypeScript version)
 // =====================================
 
-import data from "./data.json";
+import data from "../mocks/data.json";
 
 // === Types ===
 export interface UserInfos {
@@ -20,11 +20,12 @@ export interface RunningSession {
   date: string;
   distance: number;
   duration: number;
-  calories: number;
+  calories?: number;
+  caloriesBurned?: number;
 }
 
 export interface UserData {
-  id: number | string; 
+  id: number | string;
   username: string;
   password: string;
   userInfos: UserInfos;
@@ -44,6 +45,8 @@ export interface UserProfileResponse {
     totalDuration: number;
     totalSessions: number;
     goal: number;
+    totalCalories?: number;
+    totalRestDays?: number;
   };
 }
 
@@ -56,7 +59,7 @@ export const getUserById = (id: number | string): UserData | undefined => {
 };
 
 // =====================================
-//  Simulation du login
+// Simulation du login
 // =====================================
 export const mockLogin = async (
   username: string,
@@ -80,7 +83,7 @@ export const mockLogin = async (
 };
 
 // =====================================
-//  Récupère les infos utilisateur
+// Récupère les infos utilisateur
 // =====================================
 export const mockGetUserInfo = async (
   userId: number | string
@@ -99,6 +102,57 @@ export const mockGetUserInfo = async (
   );
   const totalSessions = user.runningData.length;
 
+  // 🟢 Calcul des calories totales (calories ou caloriesBurned)
+  const totalCalories = user.runningData.reduce(
+    (sum, session) => sum + (session.calories || session.caloriesBurned || 0),
+    0
+  );
+
+  // 🟦 Calcul précis des jours de repos
+  const sessions = user.runningData;
+  let totalRestDays = 0;
+
+  if (sessions.length > 0) {
+    // --- Fonction robuste de parsing de date ---
+    const parseDate = (dateStr: string) => {
+      let d = new Date(dateStr);
+      if (!isNaN(d.getTime())) return d;
+      const parts = dateStr.split(/[\/\-]/);
+      if (parts.length === 3) {
+        const [day, month, year] =
+          Number(parts[0]) > 12
+            ? [Number(parts[0]), Number(parts[1]), Number(parts[2])]
+            : [Number(parts[2]), Number(parts[1]), Number(parts[0])];
+        d = new Date(year, month - 1, day);
+      }
+      return d;
+    };
+
+    // --- Trier toutes les dates valides ---
+    const sortedDates = sessions
+      .map((s) => parseDate(s.date))
+      .filter((d) => !isNaN(d.getTime()))
+      .sort((a, b) => a.getTime() - b.getTime());
+
+    const firstDate = sortedDates[0];
+    const lastDate = sortedDates[sortedDates.length - 1];
+
+    // --- Normalisation en YYYY-MM-DD ---
+    const normalize = (d: Date) => d.toISOString().split("T")[0];
+    const activeDays = new Set(sortedDates.map(normalize));
+
+    // --- Calcul des jours manquants (repos) ---
+    const current = new Date(firstDate);
+    while (current <= lastDate) {
+      const key = normalize(current);
+      if (!activeDays.has(key)) totalRestDays++;
+      current.setDate(current.getDate() + 1);
+    }
+
+    console.log("🧩 totalRestDays calculé :", totalRestDays);
+  }
+
+  // ✅ Retour propre
   return Promise.resolve({
     profile: user.userInfos,
     statistics: {
@@ -106,12 +160,14 @@ export const mockGetUserInfo = async (
       totalDuration,
       totalSessions,
       goal: user.goal,
+      totalCalories: Number(totalCalories.toFixed(0)),
+      totalRestDays,
     },
   });
 };
 
 // =====================================
-//  Récupère les activités utilisateur
+// Récupère les activités utilisateur
 // =====================================
 export const mockGetUserActivity = async (
   userId: number | string
@@ -123,5 +179,3 @@ export const mockGetUserActivity = async (
 
   return Promise.resolve(user.runningData);
 };
-
-
