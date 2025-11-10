@@ -28,7 +28,7 @@ export default function WeeklyChart({
 
   const COLORS = ["#0B23F4", "#D8DCFF"];
 
-  // ✅ Nouveau format de date : "jj/mm/aaaa"
+  //  Nouveau format de date : "jj/mm/aaaa"
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     const day = String(d.getDate()).padStart(2, "0");
@@ -50,9 +50,9 @@ export default function WeeklyChart({
       </div>
 
       {/* --- Conteneur principal --- */}
-      <div className="flex flex-col lg:flex-row gap-8 w-full">
+      <div className="flex flex-col min-[1020px]:flex-row gap-8 w-full">
         {/* --- Colonne gauche : Donut Chart --- */}
-        <div className="bg-white rounded-xl p-6 sm:p-8 shadow-sm flex flex-col-reverse gap-8 w-full lg:w-1/2">
+        <div className="bg-white rounded-xl p-6 sm:p-8 shadow-sm flex flex-col-reverse gap-8 w-full min-[1020px]:w-1/2">
           {/* --- Donut Chart --- */}
           <div className="relative h-[180px] sm:h-[200px] flex w-full justify-center">
             {/* Légende gauche */}
@@ -92,7 +92,7 @@ export default function WeeklyChart({
           </div>
 
           {/* --- Texte sous le graphique --- */}
-          <div className="text-center lg:text-left">
+          <div className="text-center min-[1020px]:text-left">
             <p className="text-[#0B23F4] font-semibold text-lg sm:text-xl">
               x{achieved}{" "}
               <span className="text-[#B6BDFC] font-normal">
@@ -106,8 +106,8 @@ export default function WeeklyChart({
         </div>
 
         {/* --- Colonne droite : Statistiques --- */}
-        <div className="flex flex-col gap-4 w-full lg:w-1/2">
-          <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm text-center lg:text-left">
+        <div className="flex flex-col gap-4 w-full min-[1020px]:w-1/2">
+          <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm text-center min-[1020px]:text-left">
             <h3 className="text-[15px] sm:text-[16px] text-gray-500 mb-1">
               Durée d’activité
             </h3>
@@ -117,7 +117,7 @@ export default function WeeklyChart({
             </p>
           </div>
 
-          <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm text-center lg:text-left">
+          <div className="bg-white rounded-xl p-5 sm:p-6 shadow-sm text-center min-[1020px]:text-left">
             <h3 className="text-[15px] sm:text-[16px] text-gray-500 mb-1">
               Distance
             </h3>

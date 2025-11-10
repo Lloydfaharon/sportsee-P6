@@ -92,7 +92,7 @@ export default function PerformanceCharts({
         Vos dernières performances
       </h2>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 ">
+      <div className="grid grid-cols-1 min-[1020px]:grid-cols-2 gap-6">
         {/* === Distance === */}
         <div
           className="bg-white rounded-2xl p-6 sm:p-8 lg:p-10 shadow-sm transition-all duration-300 w-full"

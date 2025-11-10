@@ -138,7 +138,7 @@ Données réelles de l'utilisateur :
 
     // --- Ajout Timeout Controller ---
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000); // 10 secondes max
+    const timeout = setTimeout(() => controller.abort(), 30000); // 30 secondes max
 
     try {
       // --- Appel à l’API Mistral ---

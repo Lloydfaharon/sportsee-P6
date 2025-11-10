@@ -14,7 +14,7 @@ export default function StatistiqueCard({
   unit,
 }: StatistiqueCardProps) {
   return (
-    <div className="bg-[#0B23F4] rounded-2xl px-6 py-5 flex flex-col justify-center 2xl:w-full xl:w-[250px] lg:w-[238px] md:w-[210px]  h-[103px] text-white">
+    <div className="bg-[#0B23F4] rounded-2xl px-6 py-5 flex flex-col justify-center 2xl:w-full xl:w-[250px] lg:w-[230px] md:w-[210px]  h-[103px] text-white">
       <p className="text-[14px] mb-2 opacity-90">{label}</p>
 
       <div className="flex items-baseline gap-1">
