@@ -2,3 +2,6 @@
   base = "sportsee-p6-frontend"
   command = "npm run build"
   publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
