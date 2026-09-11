@@ -1,0 +1,14 @@
+/* dasgbordc */
+
+.custom-container {
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0) -8.38%, #fff 100%);
+}
+
+/* footer */
+.custom-logo {
+  width: "20px";
+  height: "20px";
+  display: "flex";
+  align-items: "center";
+  justify-content: "center";
+}

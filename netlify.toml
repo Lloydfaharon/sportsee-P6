@@ -1,0 +1,4 @@
+[build]
+  base = "sportsee-p6-frontend"
+  command = "npm run build"
+  publish = ".next"
