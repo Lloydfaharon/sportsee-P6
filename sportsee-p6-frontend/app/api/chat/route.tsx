@@ -41,8 +41,13 @@ export async function POST(request: Request) {
 
     try {
       // Appelle ton endpoint Next.js local déjà enrichi
+      const siteUrl =
+        process.env.URL ||
+        process.env.NEXT_PUBLIC_SITE_URL ||
+        new URL(request.url).origin;
+
       const userRes = await fetch(
-        `${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/user`,
+        `${siteUrl}/api/user`,
         {
           headers: {
             Cookie: request.headers.get("cookie") || "",

@@ -15,6 +15,11 @@ const nextConfig = {
         port: "8000",
         pathname: "/**", // utile si tu utilises parfois 127.0.0.1 au lieu de localhost
       },
+      {
+        protocol: "https",
+        hostname: "sportsee-p6.onrender.com",
+        pathname: "/**",
+      },
     ],
     unoptimized: true, // désactive l’optimisation d’images de Next (utile en dev local)
   },

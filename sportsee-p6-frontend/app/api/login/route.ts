@@ -8,6 +8,7 @@ export async function POST(request: Request) {
     const backendUrl =
       process.env.BACKEND_URL ||
       process.env.NEXT_PUBLIC_API_URL ||
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
       "https://sportsee-p6.onrender.com";
 
     const res = await fetch(`${backendUrl}/api/login`, {
@@ -26,12 +27,13 @@ export async function POST(request: Request) {
     const response = NextResponse.json({
       success: true,
       userId: data.userId,
+      token: data.token,
     });
 
     response.cookies.set("sportsee_token", data.token, {
-      httpOnly: true,
+      httpOnly: false,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax",
       path: "/",
       maxAge: 24 * 60 * 60,
     });

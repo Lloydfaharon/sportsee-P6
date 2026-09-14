@@ -15,28 +15,31 @@ export default function LoginPage() {
   setError("");
   
 
-  try {
-    const res = await fetch("http://localhost:8000/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
 
-    if (!res.ok) {
-      setError("Identifiants incorrects.");
-      return;
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        setError(errData.message || "Identifiants incorrects.");
+        return;
+      }
+
+      const data = await res.json();
+
+      // Enregistre le token dans le cookie côté client si retourné
+      if (data.token) {
+        document.cookie = `sportsee_token=${data.token}; path=/;`;
+      }
+
+      // Redirige
+      window.location.href = "/dashboard";
+    } catch (err) {
+      setError("Erreur de serveur.");
     }
-
-    const data = await res.json();
-
-    //  Enregistre le vrai token du backend dans le cookie
-    document.cookie = `sportsee_token=${data.token}; path=/;`;
-
-    //  Redirige
-    window.location.href = "/dashboard";
-  } catch (err) {
-    setError("Erreur de serveur.");
-  }
 };
 
 

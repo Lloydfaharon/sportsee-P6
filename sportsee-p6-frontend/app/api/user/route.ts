@@ -4,7 +4,10 @@ import data from "@/app/mocks/data.json";
 
 const USE_MOCK = process.env.USE_MOCK === "true";
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+  process.env.BACKEND_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.NEXT_PUBLIC_API_BASE_URL ||
+  "https://sportsee-p6.onrender.com";
 
 // =====================================
 //   GET /api/user
@@ -73,8 +76,17 @@ export async function GET(request: Request) {
       console.log(" activityData:", activityData);
 
       // Normalisation backend
+      const rawProfile = userData.profile || userData.userInfos || {};
+      let profilePicture = rawProfile.profilePicture || "";
+      if (profilePicture.includes("localhost:8000")) {
+        profilePicture = profilePicture.replace("http://localhost:8000", API_BASE_URL);
+      }
+
       dataUser = {
-        profile: userData.profile || userData.userInfos || {},
+        profile: {
+          ...rawProfile,
+          profilePicture,
+        },
         statistics: {
           goal: userData.statistics?.goal ?? 6,
           totalDistance: userData.statistics?.totalDistance ?? 0,
