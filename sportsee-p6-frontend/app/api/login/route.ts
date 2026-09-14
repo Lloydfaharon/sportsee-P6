@@ -4,8 +4,13 @@ export async function POST(request: Request) {
   try {
     const { username, password } = await request.json();
 
-    // Appel du vrai backend Express
-    const res = await fetch("http://localhost:8000/api/login", {
+    const backendUrl = process.env.BACKEND_URL;
+
+    if (!backendUrl) {
+      throw new Error("La variable BACKEND_URL est introuvable");
+    }
+
+    const res = await fetch(`${backendUrl}/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password }),
@@ -18,7 +23,6 @@ export async function POST(request: Request) {
 
     const data = await res.json();
 
-    //  Stocke le vrai JWT dans un cookie
     const response = NextResponse.json({
       success: true,
       userId: data.userId,
@@ -29,7 +33,7 @@ export async function POST(request: Request) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
-      maxAge: 24 * 60 * 60, // 1 jour
+      maxAge: 24 * 60 * 60,
     });
 
     return response;
