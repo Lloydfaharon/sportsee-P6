@@ -4,11 +4,11 @@ export async function POST(request: Request) {
   try {
     const { username, password } = await request.json();
 
-    const backendUrl = process.env.BACKEND_URL;
-
-    if (!backendUrl) {
-      throw new Error("La variable BACKEND_URL est introuvable");
-    }
+    // Utilise la variable d'environnement si présente, sinon l'URL Render en direct
+    const backendUrl =
+      process.env.BACKEND_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      "https://sportsee-p6.onrender.com";
 
     const res = await fetch(`${backendUrl}/api/login`, {
       method: "POST",
