@@ -44,11 +44,11 @@ export default function ProfilD() {
   const avgRestPerWeek = (stats.totalRestDays / totalWeeks).toFixed(1);
 
   return (
-    <div className="flex gap-20">
+    <div className="flex flex-col lg:flex-row gap-8 lg:gap-20">
       {/* --- Profil --- */}
-      <div className="w-1/2 h-[717px]">
-        <div className="flex gap-4 items-center pt-6 pr-[52px] pb-6 pl-8 bg-white rounded-xl mb-4">
-          <div className="overflow-hidden rounded-xl w-[104px] h-[117px]">
+      <div className="w-full lg:w-1/2 h-auto">
+        <div className="flex flex-col sm:flex-row gap-4 items-center p-6 sm:p-8 bg-white rounded-xl mb-4 shadow-sm text-center sm:text-left">
+          <div className="overflow-hidden rounded-xl w-[104px] h-[117px] shrink-0">
             <Image
               src={user.profilePicture || "/images/default-avatar.jpg"}
               alt={`${user.firstName} ${user.lastName}`}
@@ -73,12 +73,12 @@ export default function ProfilD() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl h-[331px] pt-10 pr-7 pb-[60px] pl-7">
-          <h2 className="font-inter text-[22px] font-medium leading-normal mb-7">
+        <div className="bg-white rounded-xl h-auto p-6 sm:p-8 shadow-sm">
+          <h2 className="font-inter text-[22px] font-medium leading-normal mb-6">
             Votre profil
           </h2>
 
-          <div className="space-y-3 text-[#707070] mt-8">
+          <div className="space-y-3 text-[#707070]">
             <p>Âge : {user.age} ans</p>
             <p>
               Genre :{" "}
@@ -96,8 +96,8 @@ export default function ProfilD() {
       </div>
 
       {/* --- Statistiques --- */}
-      <div className="w-1/2 h-[717px]">
-        <div className="mb-8">
+      <div className="w-full lg:w-1/2 h-auto">
+        <div className="mb-6">
           <h2 className="font-inter text-[22px] font-medium leading-normal">
             Vos statistiques
           </h2>
@@ -112,7 +112,7 @@ export default function ProfilD() {
         </div>
 
         {/* --- Cartes --- */}
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <StatistiqueCard
             label="Temps total couru"
             mainValue={`${hours}h`}

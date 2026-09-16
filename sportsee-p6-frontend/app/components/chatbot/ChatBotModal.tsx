@@ -84,10 +84,10 @@ export default function ChatbotModal({
   ];
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 backdrop-blur-sm">
-      <div className="relative bg-white rounded-[10px] shadow-2xl w-[1134px] h-[90vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 backdrop-blur-sm p-3 sm:p-6">
+      <div className="relative bg-white rounded-[10px] shadow-2xl w-full max-w-[1134px] h-[90vh] flex flex-col overflow-hidden">
         {/* --- Header --- */}
-        <div className="flex justify-end items-center px-6 py-4  border-gray-100">
+        <div className="flex justify-end items-center px-4 sm:px-6 py-4 border-gray-100">
           <button
             onClick={onClose}
             className="text-gray-400 flex text-[12px] items-center hover:text-gray-600 transition"
@@ -99,7 +99,7 @@ export default function ChatbotModal({
         </div>
 
         {/* --- Messages --- */}
-        <div className="flex-1 overflow-y-auto px-45 space-y-4 bg-white">
+        <div className="flex-1 overflow-y-auto px-4 sm:px-12 lg:px-45 space-y-4 bg-white">
           {/* Message d'accueil */}
           {messages.length === 0 && (
             <div className="h-full flex flex-col items-center justify-start pt-[60px] text-center text-blue-700 text-xl font-medium">
@@ -196,7 +196,7 @@ export default function ChatbotModal({
         </div>
 
         {/* --- Zone de saisie --- */}
-        <div className=" border-gray-100 bg-white px-25 py-4 flex flex-col space-y-3 mx-20">
+        <div className="border-gray-100 bg-white px-4 sm:px-12 lg:px-25 py-4 flex flex-col space-y-3 mx-2 sm:mx-8 lg:mx-20">
           <div className="relative flex flex-col gap-8 bg-white border border-gray-200 rounded-2xl p-2">
             <div className="flex gap-4 items-center">
               <svg

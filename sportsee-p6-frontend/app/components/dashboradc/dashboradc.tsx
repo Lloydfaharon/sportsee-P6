@@ -51,16 +51,17 @@ export default function Dashboardc() {
 
 
   return (
-    <div className="mt-24">
+    <div className="mt-8 md:mt-20">
       {/* --- Bandeau supérieur --- */}
-      <div className="flex bg-white justify-between px-14 py-6 mx-11 rounded-lg ">
-        <div className="flex justify-center items-center gap-4">
+      <div className="flex flex-col md:flex-row bg-white justify-between items-center gap-6 px-6 sm:px-10 lg:px-14 py-6 mx-2 sm:mx-6 lg:mx-11 rounded-xl shadow-sm">
+        <div className="flex justify-center items-center gap-4 text-center md:text-left">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="19"
-            height="21"
+            width="30"
+            height="33"
             viewBox="0 0 19 21"
             fill="none"
+            className="shrink-0"
           >
             <path
               d="M6.97444 5.20038C7.18569 4.51179 8.16047 4.51179 8.37171 5.20039L9.36071 8.4242C9.43181 8.65598 9.61324 8.83741 9.84502 8.90851L13.0688 9.89751C13.7574 10.1088 13.7574 11.0835 13.0688 11.2948L9.84502 12.2838C9.61324 12.3549 9.43181 12.5363 9.36071 12.7681L8.37171 15.9919C8.16046 16.6805 7.18569 16.6805 6.97444 15.9919L5.98545 12.7681C5.91434 12.5363 5.73292 12.3549 5.50114 12.2838L2.27732 11.2948C1.58873 11.0835 1.58873 10.1088 2.27732 9.89751L5.50114 8.90851C5.73292 8.83741 5.91434 8.65598 5.98545 8.4242L6.97444 5.20038Z"
@@ -82,7 +83,7 @@ export default function Dashboardc() {
         </div>
         <button
           onClick={() => setIsChatOpen(true)}
-          className="w-64 h-14 bg-[#0B23F4] text-white rounded-lg hover:bg-blue-600 transition"
+          className="w-full md:w-64 h-14 bg-[#0B23F4] text-white rounded-lg hover:bg-blue-600 transition flex items-center justify-center font-medium shadow-sm shrink-0"
         >
           Lancer une conversation
         </button>
@@ -90,11 +91,10 @@ export default function Dashboardc() {
 
       {/* --- Profil utilisateur --- */}
       <div
-        className="custom-container mx-11 mt-10 bg-white rounded-xl flex justify-between items-center px-14 py-8 "
-       
+        className="custom-container mx-2 sm:mx-6 lg:mx-11 mt-6 md:mt-10 bg-white rounded-xl flex flex-col md:flex-row justify-between items-center gap-6 px-6 sm:px-10 lg:px-14 py-6 sm:py-8 shadow-sm"
       >
-        <div className="flex items-center gap-6 hover:s">
-          <div className="overflow-hidden rounded-xl w-[104px] h-[117px]">
+        <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 text-center sm:text-left w-full md:w-auto">
+          <div className="overflow-hidden rounded-xl w-[104px] h-[117px] shrink-0">
             <Image
               src={user.profilePicture || "/images/default-avatar.jpg"}
               alt={`${user.firstName} ${user.lastName}`}
@@ -116,13 +116,13 @@ export default function Dashboardc() {
         </div>
 
         {/* --- Statistiques globales --- */}
-        <div className="flex justify-center gap-5 items-center">
+        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-5 items-center w-full md:w-auto">
           <div>
             <p className="font-inter text-[#707070] text-[14px] font-normal leading-normal">
               Distance totale parcourue
             </p>
           </div>
-          <div className="flex items-center text-white text-2xl bg-[#0B23F4] gap-5 px-7 py-7 rounded-2xl">
+          <div className="flex items-center text-white text-2xl bg-[#0B23F4] gap-5 px-7 py-5 sm:py-7 rounded-2xl shadow-sm">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="34"
@@ -177,7 +177,7 @@ export default function Dashboardc() {
       </div>
 
       {/* --- Graphiques --- */}
-      <div className="mt-28">
+      <div className="mt-12 md:mt-24">
         <>
           <PerformanceCharts data={userData.performance} />
           <WeeklyChart weeklyStats={userData.weeklyStats} />

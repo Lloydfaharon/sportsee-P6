@@ -4,15 +4,15 @@ import '../../styles/styles.css';
 
 export default function Footer() {
   return (
-    <footer className="bg-white text-black flex justify-between py-2.5 px-24 text-center">
+    <footer className="bg-white text-black flex flex-col sm:flex-row justify-between items-center gap-4 py-4 px-6 sm:px-12 lg:px-24 text-center">
       <p className="text-sm font-light">
         © {new Date().getFullYear()} Sportsee Tous droits réservés
       </p>
 
-      <div className="flex gap-4">
+      <div className="flex items-center gap-4 text-sm">
         <div className="flex gap-4">
-          <p>Conditions générales</p>
-          <p>Contact</p>
+          <p className="hover:text-blue-700 cursor-pointer transition">Conditions générales</p>
+          <p className="hover:text-blue-700 cursor-pointer transition">Contact</p>
         </div>
 
         {/* Conteneur du logo */}

@@ -44,31 +44,32 @@ export default function LoginPage() {
 
 
   return (
-    <div className="flex h-screen w-full bg-[#F2F3FF]">
+    <div className="flex min-h-screen w-full bg-[#F2F3FF]">
       {/* Bloc gauche */}
-      <div className="mx-42 bg-[#F2F3FF] flex flex-col items-center justify-center relative">
-        <div className="absolute top-[50px] left-2.5">
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center relative p-6 sm:p-10">
+        <div className="self-start mb-6 lg:mb-0 lg:absolute lg:top-[50px] lg:left-[50px]">
           <Logo />
         </div>
 
-        <div className="w-[350px] h-[550px] m-6.5 bg-white shadow-md rounded-2xl p-12 flex flex-col justify-center">
-          <h1 className="text-2xl font-bold text-[#0B23F4] mb-10 leading-tight">
+        <div className="w-full max-w-[380px] bg-white shadow-md rounded-2xl p-8 sm:p-12 flex flex-col justify-center my-auto">
+          <h1 className="text-2xl font-bold text-[#0B23F4] mb-8 leading-tight">
             Transformez <br /> vos stats en résultats
           </h1>
 
-          <h2 className="mb-6">Se connecter</h2>
+          <h2 className="mb-6 font-medium text-gray-800">Se connecter</h2>
 
-          <form onSubmit={handleLogin} className="flex flex-col gap-6">
+          <form onSubmit={handleLogin} className="flex flex-col gap-5">
             <div>
               <label htmlFor="email" className="text-sm font-medium text-gray-700">
-                Adresse email
+                Identifiant ou nom d'utilisateur
               </label>
               <input
                 id="email"
                 type="text"
+                placeholder="Ex: sophiemartin"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="border border-gray-300 rounded-lg w-full p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="border border-gray-300 rounded-lg w-full p-2.5 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
@@ -81,7 +82,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="border border-gray-300 rounded-lg w-full p-2 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                className="border border-gray-300 rounded-lg w-full p-2.5 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-600"
               />
             </div>
 
@@ -89,24 +90,24 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className="bg-blue-700 hover:bg-blue-600 text-white font-semibold py-2 rounded-lg mt-6"
+              className="bg-blue-700 hover:bg-blue-600 text-white font-semibold py-2.5 rounded-lg mt-4 transition cursor-pointer"
             >
               Se connecter
             </button>
           </form>
 
-          <p className="text-[14px] text-black mt-6">Mot de passe oublié ?</p>
+          <p className="text-[14px] text-gray-500 mt-6 text-center">Mot de passe oublié ?</p>
         </div>
       </div>
 
       {/* Bloc droit */}
-      <div className="relative">
+      <div className="hidden lg:block lg:w-1/2 relative">
         <img
           src="/images/imglogin.jpg"
           alt="coureurs"
           className="w-full h-full object-cover"
         />
-        <p className="absolute bottom-4 right-4 bg-white text-[11px] px-3 py-1 rounded-[50px] text-blue-700 shadow-sm h-16 items-center flex justify-center w-[288px]">
+        <p className="absolute bottom-6 right-6 bg-white text-[12px] px-5 py-3 rounded-[50px] text-blue-700 shadow-md items-center flex justify-center max-w-[320px] text-center">
           Analysez vos performances en un clin d’œil, <br />
           suivez vos progrès et atteignez vos objectifs.
         </p>
